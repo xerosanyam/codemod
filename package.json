@@ -1,0 +1,13 @@
+{
+  "name": "codemod",
+  "version": "0.0.1",
+  "description": "A collection of interesting magical codemods.",
+  "author": "Sanyam Jain @xerosanyam",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "7.18.0",
+    "jscodeshift": "0.13.1",
+    "recast": "0.21.1",
+    "lodash": "4.17.21"
+  }
+}
