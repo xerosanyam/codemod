@@ -6,31 +6,12 @@ import { transformFromAstSync } from "@babel/core";
 import { parse, print } from "recast";
 
 import lodash from "lodash";
-import { removeWhiteSpace } from "./utils";
 const { camelCase } = lodash;
 
-const strings = {};
+const removeWhiteSpace = (str) => str.replace(/\s+/gim, " ").trim();
 
-// vanilla babel custom plugin
-function updateContent(babel) {
-  const { types: t } = babel;
-  return {
-    visitor: {
-      JSXText(path) {
-        const text = path.node.value;
-        const textWithoutWhitespace = removeWhiteSpace(text);
-        const key = camelCase(textWithoutWhitespace);
-        const keyEnclosed = "{$t('" + key + "')}";
-        if (textWithoutWhitespace) {
-          strings[key] = text;
-          path.replaceWith(t.jsxIdentifier(`${keyEnclosed}`));
-        }
-      },
-    },
-  };
-}
-
-const writeFile = async (file) => {
+const writeFile = async (file, strings) => {
+  if (Object.keys(strings).length === 0) return;
   const fileExtension = path.extname(file);
 
   const fileName = fileExtension
@@ -49,8 +30,31 @@ const writeFile = async (file) => {
     process.exit(1);
   }
 };
+
 async function babelRecast(code, filePath) {
   const ast = parse(code, { parser: require("recast/parsers/babel") });
+
+  const strings = {};
+
+  // vanilla babel custom plugin
+  function updateContent(babel) {
+    const { types: t } = babel;
+    return {
+      visitor: {
+        JSXText(path) {
+          const text = path.node.value;
+          const textWithoutWhitespace = removeWhiteSpace(text);
+          const key = camelCase(textWithoutWhitespace);
+          if (!key) return;
+          const keyEnclosed = "{$t('" + key + "')}";
+          if (textWithoutWhitespace) {
+            strings[key] = text.trim();
+            path.replaceWith(t.jsxIdentifier(`${keyEnclosed}`));
+          }
+        },
+      },
+    };
+  }
 
   const options = {
     cloneInputAst: false,
@@ -59,7 +63,7 @@ async function babelRecast(code, filePath) {
     plugins: [updateContent],
   };
   const { ast: transformedAST } = transformFromAstSync(ast, code, options);
-  await writeFile(filePath);
+  await writeFile(filePath, strings);
   const result = print(transformedAST).code;
   return result;
 }
