@@ -46,7 +46,7 @@ async function babelRecast(code, filePath) {
           const textWithoutWhitespace = removeWhiteSpace(text);
           const key = camelCase(textWithoutWhitespace);
           if (!key) return;
-          const keyEnclosed = "{$t('" + key + "')}";
+          const keyEnclosed = "{t('" + key + "')}";
           if (textWithoutWhitespace) {
             strings[key] = text.trim();
             path.replaceWith(t.jsxIdentifier(`${keyEnclosed}`));

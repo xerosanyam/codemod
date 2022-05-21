@@ -7,13 +7,14 @@
   "bin": "./index.mjs",
   "dependencies": {
     "@babel/core": "7.18.0",
-    "execa": "^6.1.0",
-    "globby": "^13.1.1",
-    "inquirer": "^8.2.4",
-    "is-git-clean": "^1.1.0",
-    "jscodeshift": "^0.13.1",
+    "execa": "6.1.0",
+    "globby": "13.1.1",
+    "inquirer": "8.2.4",
+    "inquirer-fuzzy-path": "2.3.0",
+    "is-git-clean": "1.1.0",
+    "jscodeshift": "0.13.1",
     "lodash": "4.17.21",
-    "meow": "^10.1.2",
+    "meow": "10.1.2",
     "recast": "0.21.1"
   }
 }

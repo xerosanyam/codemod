@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 
 import { globby } from "globby";
 import inquirer from "inquirer";
+import inquirerFuzzyPath from "inquirer-fuzzy-path";
 import meow from "meow";
 import { execaSync } from "execa";
 import isGitClean from "is-git-clean";
@@ -16,6 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const transformerDirectory = join(__dirname, "../", "transformer");
+inquirer.registerPrompt("fuzzypath", inquirerFuzzyPath);
 
 function checkGitStatus(force) {
   let clean = false;
@@ -62,13 +64,13 @@ function runTransform({ files, flags, parser, transformer, answers }) {
     args.push("--explicit-require=false");
   }
 
-  args.push("--verbose=2");
+  args.push("--verbose=1");
 
-  // args.push("--ignore-pattern=**/node_modules/**");
+  args.push("--ignore-pattern=**/node_modules/**");
 
   // args.push("--parser", parser);
 
-  args.push("--extensions=tsx,ts,jsx,js");
+  args.push("--extensions=tsx,jsx");
 
   args = args.concat(["--transform", transformerPath]);
 
@@ -154,12 +156,14 @@ export function run() {
   inquirer
     .prompt([
       {
-        type: "input",
+        type: "fuzzypath",
         name: "files",
         message: "On which files or directory should the codemod be applied?",
         when: !cli.input[1],
-        default: ".",
-        filter: (files) => files.trim(),
+        default: "src",
+        excludePath: (nodePath) =>
+          nodePath.startsWith("node_modules") || nodePath.startsWith(".git"),
+        excludeFilter: (nodePath) => nodePath == ".",
       },
       {
         type: "list",
