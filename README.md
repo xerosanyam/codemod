@@ -1,4 +1,4 @@
-# Codemods 🪄
+# Codemod 🪄
 
 ## Usage
 
