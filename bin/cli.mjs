@@ -160,9 +160,10 @@ export function run() {
         name: "files",
         message: "On which files or directory should the codemod be applied?",
         when: !cli.input[1],
-        default: "src",
+        // default: "src",
         excludePath: (nodePath) =>
-          nodePath.startsWith("node_modules") || nodePath.startsWith(".git"),
+          nodePath.startsWith("node_modules") ||
+          (nodePath.startsWith(".") && nodePath.length > 1),
         excludeFilter: (nodePath) => nodePath == ".",
       },
       {
